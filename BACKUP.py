@@ -302,7 +302,7 @@ def eval_genomes(genomes, config):
             if output[0] > 0.5 and sankari.rect.x == sankari.X_positio:
 
 
-        if pisteet > highscore:
+       if pisteet > highscore:
             highscore = pisteet
 
         for luoti in luodit:
