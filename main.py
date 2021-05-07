@@ -2,36 +2,14 @@
 import os
 import random
 import sys
-
+import pickle
 import neat
-import pygame
+
+from assets import *
 
 pygame.init()
+
 highscore = 0
-IKKUNA_KORKEUS = 512
-IKKUNA_LEVEYS = 1200
-
-NAYTTO = pygame.display.set_mode((IKKUNA_LEVEYS, IKKUNA_KORKEUS))
-
-JUOKSU = [pygame.transform.scale(pygame.image.load('./assets/sankari-juoksu-1.png'), (128, 128)),
-          pygame.transform.scale(pygame.image.load('./assets/sankari-juoksu-2.png'), (128, 128)),
-          pygame.transform.scale(pygame.image.load('./assets/sankari-juoksu-3.png'), (128, 128)),
-          pygame.transform.scale(pygame.image.load('./assets/sankari-juoksu-4.png'), (128, 128)),
-          pygame.transform.scale(pygame.image.load('./assets/sankari-juoksu-5.png'), (128, 128)),
-          pygame.transform.scale(pygame.image.load('./assets/sankari-juoksu-6.png'), (128, 128))]
-
-HYPPY = pygame.transform.scale(pygame.image.load('./assets/sankari-hyppy.png'), (128, 128))
-
-PIENI_PUSKA = pygame.transform.scale2x(pygame.image.load('./assets/puska-pieni.png'))
-ISO_PUSKA = pygame.transform.scale(pygame.image.load('./assets/puska-suuri.png'), (128, 128))
-VIHOLLINEN = [
-    pygame.transform.flip(pygame.transform.scale(pygame.image.load('./assets/vihu1.png'), (96, 96)), True, False),
-    pygame.transform.flip(pygame.transform.scale(pygame.image.load('./assets/vihu2.png'), (96, 96)), True, False),
-    pygame.transform.flip(pygame.transform.scale(pygame.image.load('./assets/vihu3.png'), (96, 96)), True, False),
-    pygame.transform.flip(pygame.transform.scale(pygame.image.load('./assets/vihu4.png'), (96, 96)), True, False)]
-TAUSTA = pygame.transform.scale(pygame.image.load('./assets/tausta.png'), (1200, 512))
-LUOTI = pygame.transform.scale(pygame.image.load('./assets/ammus.png'), (30, 30))
-FONTTI = pygame.font.Font('./assets/gothic_pixel.ttf', 40)
 
 
 class Sankari:
@@ -41,12 +19,16 @@ class Sankari:
     PONNISTUSVOIMA = 14
 
     def __init__(self, kuva=JUOKSU[0]):
+        self.viholliset = []
+        self.luodit = []
         self.kuva = kuva
         self.sankari_juoksee = True
         self.sankari_hyppaa = False
         self.ponnistusvoima = self.PONNISTUSVOIMA
         self.askel_indeksi = 0
         self.rect = pygame.Rect(self.X_positio, self.Y_positio, kuva.get_width(), kuva.get_height())
+        self.vari = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+        self.pisteet = pisteet
 
     def paivita(self):
         if self.sankari_juoksee:
@@ -65,8 +47,9 @@ class Sankari:
 
     def hyppaa(self):
         self.sankari_hyppaa = True
+        self.kuva = HYPPY[0]
         self.sankari_juoksee = False
-        self.kuva = HYPPY
+
 
         if self.sankari_hyppaa:
             self.rect.y -= self.ponnistusvoima * 2
@@ -81,10 +64,9 @@ class Sankari:
 
     def piirra(self, NAYTTO):
         NAYTTO.blit(self.kuva, (self.rect.x, self.rect.y))
-
-    def ammu(self, nopeus=12):
-        print("bam")
-        ammus = Luoti(nopeus, self.X_positio, self.Y_positio)
+        NAYTTO.blit(self.kuva, (self.rect.x, self.rect.y))
+        for vihollinen in self.viholliset:
+            pygame.draw.line(NAYTTO, self.vari, (self.rect.x + 74, self.rect.y + 35), vihollinen.rect.center, 5)
 
 
 class Vihollinen():
@@ -92,10 +74,10 @@ class Vihollinen():
         self.kuva = kuva
         self.rect = self.kuva.get_rect()
         self.rect.x = IKKUNA_LEVEYS + random.randint(0, 100)
-        self.rect.y = random.randint(0, 310)
+        self.rect.y = random.randint(0, 512)
         self.askel_indeksi = 0
 
-    def paivita(self, kuva=VIHOLLINEN[0]):
+    def paivita(self, sankari, kuva=VIHOLLINEN[0], ):
         self.kuva = VIHOLLINEN[self.askel_indeksi // 9]
         self.askel_indeksi += 1
 
@@ -103,7 +85,7 @@ class Vihollinen():
         if self.askel_indeksi >= 36:
             self.askel_indeksi = 0
         if self.rect.x < -self.rect.width:
-            viholliset.pop()
+            sankari.viholliset.pop()
 
     def piirra(self, NAYTTO):
         NAYTTO.blit(self.kuva, self.rect)
@@ -117,31 +99,80 @@ class Luoti():
         self.rect.x = x_positio + 70
         self.rect.y = y_positio + 60
 
-    def paivita(self):
+    def paivita(self, sankari):
         self.rect.x += self.nopeus
         if self.rect.x > IKKUNA_LEVEYS:
-            luodit.pop()
+            sankari.luodit.pop(0)
 
-    def piirra(self, NAYTTO)
+    def piirra(self, NAYTTO):
         NAYTTO.blit(self.kuva, self.rect)
 
 
-def etaisyys(sankari, vihollinen):
-    return math.sqrt((sankari[0] - vihollinen[0]) ** 2 + (sankari[1] - vihollinen[1]) ** 2)
+def paivita_luodit(sankari):
+    for luoti in sankari.luodit:
+        luoti.piirra(NAYTTO)
+        luoti.paivita(sankari)
+
+
+def tarkista_osumat(sankari):
+    for vihollinen in sankari.viholliset:
+        vihollinen.piirra(NAYTTO)
+        vihollinen.paivita(sankari)
+        for i, sankari in enumerate(sankarit):
+            for j, luoti in enumerate(sankari.luodit):
+                if luoti.rect.colliderect(vihollinen.rect) and len(sankari.viholliset) > 0:
+                    ge[i].fitness += 1
+                    sankari.luodit.pop(0)
+                    sankari.viholliset.pop(0)
+                    sankari.pisteet += 1
+
+            if sankari.rect.colliderect(vihollinen.rect):
+                ge[i].fitness -= 10
+                sankari.alive = False
+                sankarit.pop(i)
+                ge.pop(i)
+                nets.pop(i)
+
+
+
+def hae_komennot(sankari, i):
+    def etaisyys(sankari):
+
+        if len(sankari.viholliset) == 0:
+            pass
+        else:
+            return math.sqrt((sankari.rect.x - sankari.viholliset[0].rect.x) ** 2 + (
+                        sankari.rect.y - sankari.viholliset[0].rect.y) ** 2)
+
+    for i, sankari in enumerate(sankarit):
+
+        distance_between_enemy = (
+            sankari.rect.y, etaisyys(sankari))
+
+
+        if distance_between_enemy[1] == None:
+            pass
+        else:
+
+            output = nets[i].activate((distance_between_enemy))
+
+            if output[0] > 0.5 and len(sankari.luodit) < 1:
+                sankari.luodit.append(Luoti(nopeus, sankari.rect.x, sankari.rect.y))
+            if output[1] > 0.5 and sankari.rect.x == sankari.X_positio:
+                sankari.sankari_hyppaa = True
 
 
 def eval_genomes(genomes, config):
-    global nopeus, pisteet, tausta_x, tausta_y, sankarit, ge, nets, viholliset, highscore, luodit
+    global nopeus, pisteet, tausta_x, tausta_y, sankarit, ge, nets, highscore, luodit
     kello = pygame.time.Clock()
     pisteet = 0
     tausta_x = 0
     tausta_y = 0
-    nopeus = 10
+    nopeus = 20
     ge = []
     nets = []
-    viholliset = []
+
     sankarit = []
-    luodit = []
 
     for genome_id, genome in genomes:
         sankarit.append(Sankari())
@@ -161,12 +192,8 @@ def eval_genomes(genomes, config):
         tausta_x -= nopeus
 
     def pistelasku():
-        global pisteet, nopeus, highscore
-        pisteteksti = FONTTI.render(f'PISTEET   {str(pisteet)}', True, (0, 0, 0))
-        nopeusteksti = FONTTI.render(f'NOPEUS   {str(nopeus)}', True, (0, 0, 0))
+
         enkkateksti = FONTTI.render(f'ENNATYS   {str(highscore)}', True, (0, 0, 0))
-        NAYTTO.blit(pisteteksti, (900, 400))
-        NAYTTO.blit(nopeusteksti, (900, 440))
         NAYTTO.blit(enkkateksti, (900, 480))
 
     def tilastot():
@@ -176,7 +203,6 @@ def eval_genomes(genomes, config):
 
         NAYTTO.blit(text_1, (50, 450))
         NAYTTO.blit(text_2, (50, 480))
-
 
     run = True
 
@@ -195,52 +221,27 @@ def eval_genomes(genomes, config):
                     sankarit[0].laskeudu()
 
                 if event.key == pygame.K_c:
-                    luodit.append(Luoti(nopeus, sankarit[0].rect.x, sankarit[0].rect.y))
+                    sankarit[0].luodit.append(Luoti(nopeus, sankarit[0].rect.x, sankarit[0].rect.y))
 
         NAYTTO.fill((255, 255, 255))
         tausta()
 
-        for sankari in sankarit:
+        for i, sankari in enumerate(sankarit):
             sankari.paivita()
             sankari.piirra(NAYTTO)
+
+            if len(sankari.viholliset) < 1:
+                sankari.viholliset.append(Vihollinen())
+            paivita_luodit(sankari)
+            tarkista_osumat(sankari)
+            hae_komennot(sankari, i)
+
+            if sankari.pisteet > highscore:
+                highscore = sankari.pisteet
 
         if len(sankarit) == 0:
             break
 
-        if len(viholliset) == 0:
-            viholliset.append(Vihollinen())
-
-        for vihollinen in viholliset:
-            vihollinen.piirra(NAYTTO)
-            vihollinen.paivita()
-            for i, sankari in enumerate(sankarit):
-                for j, luoti in enumerate(luodit):
-                    if luoti.rect.colliderect(vihollinen.rect):
-                        ge[i].fitness += 5
-                        pisteet += 1
-                        luodit.pop(j)
-                        viholliset.pop(0)
-
-                if sankari.rect.colliderect(vihollinen.rect):
-                    ge[i].fitness -= 1
-                    sankarit.pop(i)
-                    ge.pop(i)
-                    nets.pop(i)
-                else:
-                    ge[i].fitness += 1
-
-        for i, sankari in enumerate(sankarit):
-            distance_between_enemy = (sankari.rect.y, etaisyys((sankari.rect.x, sankari.rect.y), vihollinen.rect))
-            output = nets[i].activate((distance_between_enemy))
-
-            if output[0] > 0.5:
-                luodit.append(Luoti(nopeus, sankari.rect.x, sankari.rect.y))
-        if pisteet > highscore:
-            highscore = pisteet
-
-        for luoti in luodit:
-            luoti.piirra(NAYTTO)
-            luoti.paivita()
         pistelasku()
         tilastot()
         kello.tick(30)
@@ -261,10 +262,32 @@ def run(config_path):
     pop.add_reporter(neat.StdOutReporter(True))
     statistiikka = neat.StatisticsReporter()
     pop.add_reporter(statistiikka)
-    pop.run(eval_genomes, 100)
+    winner = pop.run(eval_genomes, 1000)
+    pickle.dump(winner, open('winner.pkl', 'wb'))
+
+def replay_genome(config_path, genome_path="winner.pkl"):
+    global pop
+    # Load requried NEAT config
+    config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, config_path)
+    pop = neat.Population(config)
+    # Unpickle saved winner
+    with open(genome_path, "rb") as f:
+        genome = pickle.load(f)
+
+    # Convert loaded genome into required data structure
+    genomes = [(1, genome)]
+
+    # Call game with only the loaded genome
+    eval_genomes(genomes, config)
 
 
 if __name__ == '__main__':
     local_dir = os.path.dirname(__file__)
     config_path = os.path.join(local_dir, 'config.txt')
-    run(config_path)
+
+    if len(sys.argv) < 2:
+        print("normal run")
+        run(config_path)
+    else:
+        print("Doing replay")
+        replay_genome(config_path)
