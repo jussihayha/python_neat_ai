@@ -1,8 +1,8 @@
-﻿import math
-import os
+﻿import os
+import pickle
 import random
 import sys
-import pickle
+
 import neat
 
 from assets import *
@@ -10,6 +10,7 @@ from assets import *
 pygame.init()
 
 highscore = 0
+nopeus = 14
 
 
 class Sankari:
@@ -19,8 +20,7 @@ class Sankari:
     PONNISTUSVOIMA = 14
 
     def __init__(self, kuva=JUOKSU[0]):
-        self.viholliset = []
-        self.luodit = []
+
         self.kuva = kuva
         self.sankari_juoksee = True
         self.sankari_hyppaa = False
@@ -28,7 +28,7 @@ class Sankari:
         self.askel_indeksi = 0
         self.rect = pygame.Rect(self.X_positio, self.Y_positio, kuva.get_width(), kuva.get_height())
         self.vari = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-        self.pisteet = pisteet
+        self.mask = pygame.mask.from_surface(self.kuva)
 
     def paivita(self):
         if self.sankari_juoksee:
@@ -50,7 +50,6 @@ class Sankari:
         self.kuva = HYPPY[0]
         self.sankari_juoksee = False
 
-
         if self.sankari_hyppaa:
             self.rect.y -= self.ponnistusvoima * 2
             self.ponnistusvoima -= 0.8
@@ -64,8 +63,7 @@ class Sankari:
 
     def piirra(self, NAYTTO):
         NAYTTO.blit(self.kuva, (self.rect.x, self.rect.y))
-        NAYTTO.blit(self.kuva, (self.rect.x, self.rect.y))
-        for vihollinen in self.viholliset:
+        for vihollinen in viholliset:
             pygame.draw.line(NAYTTO, self.vari, (self.rect.x + 74, self.rect.y + 35), vihollinen.rect.center, 5)
 
 
@@ -73,49 +71,29 @@ class Vihollinen():
     def __init__(self, kuva=VIHOLLINEN[0]):
         self.kuva = kuva
         self.rect = self.kuva.get_rect()
-        self.rect.x = IKKUNA_LEVEYS + random.randint(0, 100)
-        self.rect.y = random.randint(0, 512)
+        self.rect.x = IKKUNA_LEVEYS
+        self.rect.y = 280
         self.askel_indeksi = 0
+        self.vari = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+        self.mask = pygame.mask.from_surface(self.kuva)
 
-    def paivita(self, sankari, kuva=VIHOLLINEN[0], ):
+    def paivita(self, kuva=VIHOLLINEN[0]):
         self.kuva = VIHOLLINEN[self.askel_indeksi // 9]
         self.askel_indeksi += 1
 
         self.rect.x -= nopeus
         if self.askel_indeksi >= 36:
             self.askel_indeksi = 0
-        if self.rect.x < -self.rect.width:
-            sankari.viholliset.pop()
+        if self.rect.x < 0:
+            viholliset.pop()
 
     def piirra(self, NAYTTO):
         NAYTTO.blit(self.kuva, self.rect)
 
-
-class Luoti():
-    def __init__(self, nopeus, x_positio, y_positio, kuva=LUOTI):
-        self.kuva = kuva
-        self.nopeus = nopeus + 2
-        self.rect = self.kuva.get_rect()
-        self.rect.x = x_positio + 70
-        self.rect.y = y_positio + 60
-
-    def paivita(self, sankari):
-        self.rect.x += self.nopeus
-        if self.rect.x > IKKUNA_LEVEYS:
-            sankari.luodit.pop(0)
-
-    def piirra(self, NAYTTO):
-        NAYTTO.blit(self.kuva, self.rect)
-
-
-def paivita_luodit(sankari):
-    for luoti in sankari.luodit:
-        luoti.piirra(NAYTTO)
-        luoti.paivita(sankari)
 
 
 def tarkista_osumat(sankari):
-    for vihollinen in sankari.viholliset:
+    for vihollinen Ein sankari.viholliset:
         vihollinen.piirra(NAYTTO)
         vihollinen.paivita(sankari)
         for i, sankari in enumerate(sankarit):
@@ -247,7 +225,6 @@ def eval_genomes(genomes, config):
         kello.tick(30)
         pygame.display.update()
 
-
 def run(config_path):
     global pop
     config = neat.config.Config(
@@ -262,22 +239,32 @@ def run(config_path):
     pop.add_reporter(neat.StdOutReporter(True))
     statistiikka = neat.StatisticsReporter()
     pop.add_reporter(statistiikka)
-    winner = pop.run(eval_genomes, 1000)
+    winner = pop.run(eval_genomes, 100)
+
     pickle.dump(winner, open('winner.pkl', 'wb'))
 
+    visualize.plot_stats(pop.statistics)
+    visualize.plot_species(pop.statistics)
+    visualize.draw_net(winner, view=True, filename="xor2-all.gv")
+    visualize.draw_net(winner, view=True, filename="xor2-enabled.gv", show_disabled=False)
+    visualize.draw_net(winner, view=True, filename="xor2-enabled-pruned.gv", show_disabled=False, prune_unused=True)
+    statistics.save_stats(pop.statistics)
+    statistics.save_species_count(pop.statistics)
+    statistics.save_species_fitness(pop.statistics)
+
+
+# https://stackoverflow.com/questions/61365668/applying-saved-neat-python-genome-to-test-environment-after-training
 def replay_genome(config_path, genome_path="winner.pkl"):
-    global pop
     # Load requried NEAT config
-    config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, config_path)
-    pop = neat.Population(config)
+    config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet,
+                                neat.DefaultStagnation, config_path)
+
     # Unpickle saved winner
     with open(genome_path, "rb") as f:
         genome = pickle.load(f)
 
     # Convert loaded genome into required data structure
     genomes = [(1, genome)]
-
-    # Call game with only the loaded genome
     eval_genomes(genomes, config)
 
 
