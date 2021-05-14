@@ -44,7 +44,8 @@ $ python main.py train 10000
 Currently the codebase and assets are a mixture of english and finnish language. My intention is that I will change the language to english, but unfortunately that has proven to be some what slow, and my progress in getting this thing to work properly has been slow.
 
 ### Acknowledgements
-Kenneth O. Stanley and Risto Miikkulainen for publishing the paper on 'Evolving Neural Networks through Augmenting Topologies'
-CodeBullet for providing humorous videos about creating and figuring out how to operate AI's in different scenarios.
+Kenneth O. Stanley and Risto Miikkulainen for publishing the paper on 'Evolving Neural Networks through Augmenting Topologies'  
+CodeBullet for providing humorous videos about creating and figuring out how to operate AI's in different scenarios.  
+<strong> Googlaa kuka teki noi assetit </strong>
 
 

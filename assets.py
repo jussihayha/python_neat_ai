@@ -1,20 +1,20 @@
 import pygame
 
 pygame.font.init()
-IKKUNA_KORKEUS = 512
-IKKUNA_LEVEYS = 1200
+WIN_HEIGHT = 512
+WIN_WIDTH = 1200
 
-NAYTTO = pygame.display.set_mode((IKKUNA_LEVEYS, IKKUNA_KORKEUS))
+DISPLAY = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
 
-# Sankarin kuvat
-JUOKSU = [pygame.transform.scale(pygame.image.load('./assets/sankari-juoksu-1.png'), (128, 128)),
+# HERO images
+RUN = [pygame.transform.scale(pygame.image.load('./assets/sankari-juoksu-1.png'), (128, 128)),
           pygame.transform.scale(pygame.image.load('./assets/sankari-juoksu-2.png'), (128, 128)),
           pygame.transform.scale(pygame.image.load('./assets/sankari-juoksu-3.png'), (128, 128)),
           pygame.transform.scale(pygame.image.load('./assets/sankari-juoksu-4.png'), (128, 128)),
           pygame.transform.scale(pygame.image.load('./assets/sankari-juoksu-5.png'), (128, 128)),
           pygame.transform.scale(pygame.image.load('./assets/sankari-juoksu-6.png'), (128, 128))]
 
-HYPPY = [pygame.transform.scale(pygame.image.load('./assets/sankari-hyppy-1.png'), (128, 128)),
+JUMP = [pygame.transform.scale(pygame.image.load('./assets/sankari-hyppy-1.png'), (128, 128)),
          pygame.transform.scale(pygame.image.load('./assets/sankari-hyppy-1.png'), (128, 128)),
          pygame.transform.scale(pygame.image.load('./assets/sankari-hyppy-2.png'), (128, 128)),
          pygame.transform.scale(pygame.image.load('./assets/sankari-hyppy-2.png'), (128, 128)),
@@ -22,18 +22,18 @@ HYPPY = [pygame.transform.scale(pygame.image.load('./assets/sankari-hyppy-1.png'
          pygame.transform.scale(pygame.image.load('./assets/sankari-hyppy-3.png'), (128, 128))
          ]
 
-# Esteiden kuvat
-PIENI_PUSKA = pygame.transform.scale2x(pygame.image.load('./assets/puska-pieni.png'))
-ISO_PUSKA = pygame.transform.scale(pygame.image.load('./assets/puska-suuri.png'), (128, 128))
+# OBSTACLES PICTURE
+SMALL_BUSH = pygame.transform.scale2x(pygame.image.load('./assets/puska-pieni.png'))
+LARGE_BUSH = pygame.transform.scale(pygame.image.load('./assets/puska-suuri.png'), (128, 128))
 
-# Vihollisen kuvat
-VIHOLLINEN = [
+# ENEMY PICTURES
+ENEMY = [
     pygame.transform.flip(pygame.transform.scale(pygame.image.load('./assets/vihu1.png'), (96, 96)), True, False),
     pygame.transform.flip(pygame.transform.scale(pygame.image.load('./assets/vihu2.png'), (96, 96)), True, False),
     pygame.transform.flip(pygame.transform.scale(pygame.image.load('./assets/vihu3.png'), (96, 96)), True, False),
     pygame.transform.flip(pygame.transform.scale(pygame.image.load('./assets/vihu4.png'), (96, 96)), True, False)]
 
-# Loput kuvat
-TAUSTA = pygame.transform.scale(pygame.image.load('./assets/tausta.png'), (1200, 512))
-LUOTI = pygame.transform.scale(pygame.image.load('./assets/ammus.png'), (30, 30))
-FONTTI = pygame.font.Font('./assets/gothic_pixel.ttf', 40)
+# RANDOM VARIABLES
+BG = pygame.transform.scale(pygame.image.load('./assets/tausta.png'), (1200, 512))
+BULLET = pygame.transform.scale(pygame.image.load('./assets/ammus.png'), (30, 30))
+FONT = pygame.font.Font('./assets/gothic_pixel.ttf', 40)

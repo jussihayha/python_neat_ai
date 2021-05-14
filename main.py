@@ -4,183 +4,136 @@ import random
 import sys
 
 import neat
+import pygame.sprite
 
 from assets import *
 
 pygame.init()
 
-highscore = 0
-nopeus = 14
+
+class Hero(pygame.sprite.Sprite):
+    X_position = 300
+    Y_position = 250
+
+    VELOCITY = 14
+
+    def __init__(self, image=RUN[0]):
+
+        self.image = image
+        self.hero_running = True
+        self.hero_jumping = False
+        self.velocity = self.VELOCITY
+        self.step_index = 0
+        self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.image)
+        self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 
 
-class Sankari:
-    X_positio = 300
-    Y_positio = 250
+    def update(self):
+        if self.hero_running:
+            self.run()
+        if self.hero_jumping:
+            self.jump()
 
-    PONNISTUSVOIMA = 14
+        if self.step_index >= 36:
+            self.step_index = 0
 
-    def __init__(self, kuva=JUOKSU[0]):
+    def run(self):
+        self.image = RUN[self.step_index // 6]
+        self.rect.x = self.X_position
+        self.rect.y = self.Y_position
+        self.step_index += 1
 
-        self.kuva = kuva
-        self.sankari_juoksee = True
-        self.sankari_hyppaa = False
-        self.ponnistusvoima = self.PONNISTUSVOIMA
-        self.askel_indeksi = 0
-        self.rect = pygame.Rect(self.X_positio, self.Y_positio, kuva.get_width(), kuva.get_height())
-        self.vari = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-        self.mask = pygame.mask.from_surface(self.kuva)
+    def jump(self):
+        self.hero_jumping = True
+        self.image = JUMP[0]
+        self.hero_running = False
 
-    def paivita(self):
-        if self.sankari_juoksee:
-            self.juokse()
-        if self.sankari_hyppaa:
-            self.hyppaa()
+        if self.hero_jumping:
+            self.rect.y -= self.velocity * 2
+            self.velocity -= 0.8
+        if self.velocity <= -self.VELOCITY:
+            self.hero_jumping = False
+            self.hero_running = True
+            self.velocity = self.VELOCITY
 
-        if self.askel_indeksi >= 36:
-            self.askel_indeksi = 0
+    def stomp(self):
+        self.velocity -= self.VELOCITY * 0.9
 
-    def juokse(self):
-        self.kuva = JUOKSU[self.askel_indeksi // 6]
-        self.rect.x = self.X_positio
-        self.rect.y = self.Y_positio
-        self.askel_indeksi += 1
-
-    def hyppaa(self):
-        self.sankari_hyppaa = True
-        self.kuva = HYPPY[0]
-        self.sankari_juoksee = False
-
-        if self.sankari_hyppaa:
-            self.rect.y -= self.ponnistusvoima * 2
-            self.ponnistusvoima -= 0.8
-        if self.ponnistusvoima <= -self.PONNISTUSVOIMA:
-            self.sankari_hyppaa = False
-            self.sankari_juoksee = True
-            self.ponnistusvoima = self.PONNISTUSVOIMA
-
-    def laskeudu(self):
-        self.ponnistusvoima -= self.PONNISTUSVOIMA * 0.9
-
-    def piirra(self, NAYTTO):
-        NAYTTO.blit(self.kuva, (self.rect.x, self.rect.y))
-        for vihollinen in viholliset:
-            pygame.draw.line(NAYTTO, self.vari, (self.rect.x + 74, self.rect.y + 35), vihollinen.rect.center, 5)
+    def draw(self, DISPLAY):
+        DISPLAY.blit(self.image, (self.rect.x, self.rect.y))
 
 
-class Vihollinen():
-    def __init__(self, kuva=VIHOLLINEN[0]):
-        self.kuva = kuva
-        self.rect = self.kuva.get_rect()
-        self.rect.x = IKKUNA_LEVEYS
-        self.rect.y = 280
-        self.askel_indeksi = 0
-        self.vari = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-        self.mask = pygame.mask.from_surface(self.kuva)
 
-    def paivita(self, kuva=VIHOLLINEN[0]):
-        self.kuva = VIHOLLINEN[self.askel_indeksi // 9]
-        self.askel_indeksi += 1
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self, amount=1, image=ENEMY[0]):
+        super(Enemy, self).__init__()
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect.x = WIN_WIDTH
+        self.rect.y = 300
+        self.step_index = 0
+        self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+        self.amount = amount
 
-        self.rect.x -= nopeus
-        if self.askel_indeksi >= 36:
-            self.askel_indeksi = 0
+    def update(self, image=ENEMY[0]):
+        self.image = ENEMY[self.step_index // 9]
+        self.step_index += 1
+
+        self.rect.x -= speed
+        if self.step_index >= 36:
+            self.step_index = 0
         if self.rect.x < 0:
-            viholliset.pop()
+            enemies.pop()
 
-    def piirra(self, NAYTTO):
-        NAYTTO.blit(self.kuva, self.rect)
-
-
-
-def tarkista_osumat(sankari):
-    for vihollinen Ein sankari.viholliset:
-        vihollinen.piirra(NAYTTO)
-        vihollinen.paivita(sankari)
-        for i, sankari in enumerate(sankarit):
-            for j, luoti in enumerate(sankari.luodit):
-                if luoti.rect.colliderect(vihollinen.rect) and len(sankari.viholliset) > 0:
-                    ge[i].fitness += 1
-                    sankari.luodit.pop(0)
-                    sankari.viholliset.pop(0)
-                    sankari.pisteet += 1
-
-            if sankari.rect.colliderect(vihollinen.rect):
-                ge[i].fitness -= 10
-                sankari.alive = False
-                sankarit.pop(i)
-                ge.pop(i)
-                nets.pop(i)
-
-
-
-def hae_komennot(sankari, i):
-    def etaisyys(sankari):
-
-        if len(sankari.viholliset) == 0:
-            pass
-        else:
-            return math.sqrt((sankari.rect.x - sankari.viholliset[0].rect.x) ** 2 + (
-                        sankari.rect.y - sankari.viholliset[0].rect.y) ** 2)
-
-    for i, sankari in enumerate(sankarit):
-
-        distance_between_enemy = (
-            sankari.rect.y, etaisyys(sankari))
-
-
-        if distance_between_enemy[1] == None:
-            pass
-        else:
-
-            output = nets[i].activate((distance_between_enemy))
-
-            if output[0] > 0.5 and len(sankari.luodit) < 1:
-                sankari.luodit.append(Luoti(nopeus, sankari.rect.x, sankari.rect.y))
-            if output[1] > 0.5 and sankari.rect.x == sankari.X_positio:
-                sankari.sankari_hyppaa = True
+    def draw(self, DISPLAY):
+        for i in range(self.amount):
+            DISPLAY.blit(self.image, self.rect )
 
 
 def eval_genomes(genomes, config):
-    global nopeus, pisteet, tausta_x, tausta_y, sankarit, ge, nets, highscore, luodit
-    kello = pygame.time.Clock()
-    pisteet = 0
-    tausta_x = 0
-    tausta_y = 0
-    nopeus = 20
+    global speed, points, bg_x, bg_y, heroes, enemies, ge, nets, highscore
+    clock = pygame.time.Clock()
+    points = 0
+    bg_x = 0
+    bg_y = 0
+    speed = 15
     ge = []
     nets = []
-
-    sankarit = []
-
+    heroes = []
+    enemies = []
+    highscore = 0
     for genome_id, genome in genomes:
-        sankarit.append(Sankari())
+        heroes.append(Hero())
         ge.append(genome)
         net = neat.nn.FeedForwardNetwork.create(genome, config)
         nets.append(net)
         genome.fitness = 0
 
-    def tausta():
-        global tausta_x, tausta_y
-        kuva_leveys = TAUSTA.get_width()
-        NAYTTO.blit(TAUSTA, (tausta_x, tausta_y))
-        NAYTTO.blit(TAUSTA, (kuva_leveys + tausta_x, tausta_y))
+    def background():
+        DISPLAY.blit(BG, (0, 0))
 
-        if tausta_x <= -kuva_leveys:
-            tausta_x = 0
-        tausta_x -= nopeus
+    def point_function():
+        current_points = FONT.render(f'POINTS {str(points)}', True, (0, 0, 0))
+        highscore_points = FONT.render(f'HIGHSCORE {str(highscore)}', True, (0, 0, 0))
+        DISPLAY.blit(current_points, (900, 450))
+        DISPLAY.blit(highscore_points, (900, 480))
 
-    def pistelasku():
+    def statistics():
+        global enemies, speed, ge
+        text_1 = FONT.render(f'ALIVE  {str(len(heroes))}', True, (0, 0, 0))
+        text_2 = FONT.render(f'GENERATION  {pop.generation + 1}', True, (0, 0, 0))
 
-        enkkateksti = FONTTI.render(f'ENNATYS   {str(highscore)}', True, (0, 0, 0))
-        NAYTTO.blit(enkkateksti, (900, 480))
+        DISPLAY.blit(text_1, (50, 450))
+        DISPLAY.blit(text_2, (50, 480))
 
-    def tilastot():
-        global sankarit, nopeus, ge
-        text_1 = FONTTI.render(f'ELOSSA  {str(len(sankarit))}', True, (0, 0, 0))
-        text_2 = FONTTI.render(f'SUKUPOLVI  {pop.generation + 1}', True, (0, 0, 0))
+    def check_collision(hero, enemy):
 
-        NAYTTO.blit(text_1, (50, 450))
-        NAYTTO.blit(text_2, (50, 480))
+        if pygame.sprite.spritecollide(hero, enemy, False, pygame.sprite.collide_mask):
+            heroes.pop(0)
+
+
 
     run = True
 
@@ -191,39 +144,50 @@ def eval_genomes(genomes, config):
                 pygame.quit()
                 sys.exit()
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    sankarit[0].sankari_hyppaa = True
+        DISPLAY.fill((255, 255, 255))
+        background()
 
-                if event.key == pygame.K_z and sankarit[0].rect.x != 300:
-                    sankarit[0].laskeudu()
+        if len(enemies) == 0:
+            amount = random.randint(0, 2)
 
-                if event.key == pygame.K_c:
-                    sankarit[0].luodit.append(Luoti(nopeus, sankarit[0].rect.x, sankarit[0].rect.y))
+            if amount == 1:
+                enemies.append(pygame.sprite.Group(Enemy(1)))
+            elif amount == 2:
+                enemies.append(pygame.sprite.Group(Enemy(2)))
+            else:
+                enemies.append(pygame.sprite.Group(Enemy(3)))
 
-        NAYTTO.fill((255, 255, 255))
-        tausta()
+        for enemy in enemies:
+            enemy.draw(DISPLAY)
+            enemy.update()
 
-        for i, sankari in enumerate(sankarit):
-            sankari.paivita()
-            sankari.piirra(NAYTTO)
+        for i, hero in enumerate(heroes):
+            hero.update()
+            hero.draw(DISPLAY)
 
-            if len(sankari.viholliset) < 1:
-                sankari.viholliset.append(Vihollinen())
-            paivita_luodit(sankari)
-            tarkista_osumat(sankari)
-            hae_komennot(sankari, i)
+            if len(enemies) > 0:
+                check_collision(hero, enemies[0])
 
-            if sankari.pisteet > highscore:
-                highscore = sankari.pisteet
 
-        if len(sankarit) == 0:
+        if len(heroes) == 0:
             break
 
-        pistelasku()
-        tilastot()
-        kello.tick(30)
+        for i, hero in enumerate(heroes):
+
+            output = nets[i].activate((dinosaur.rect.y,
+                                       distance((dinosaur.rect.x, dinosaur.rect.y),
+                                        obstacle.rect.midtop)))
+            if output[0] > 0.5 and dinosaur.rect.y == dinosaur.Y_POS:
+                dinosaur.dino_jump = True
+                dinosaur.dino_run = False
+
+        if points > highscore:
+            highscore = points
+        point_function()
+        statistics()
+        clock.tick(30)
         pygame.display.update()
+
 
 def run(config_path):
     global pop
@@ -239,7 +203,7 @@ def run(config_path):
     pop.add_reporter(neat.StdOutReporter(True))
     statistiikka = neat.StatisticsReporter()
     pop.add_reporter(statistiikka)
-    winner = pop.run(eval_genomes, 100)
+    winner = pop.run(eval_genomes, 5)
 
     pickle.dump(winner, open('winner.pkl', 'wb'))
 
