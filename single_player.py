@@ -1,7 +1,7 @@
 ﻿import random
 import sys
 
-from assets import *
+from assets_singleplayer import *
 
 pygame.init()
 aika = 0
@@ -18,10 +18,7 @@ class Sankari:
     PONNISTUSVOIMA = 14
 
     def __init__(self, kuva=JUOKSU[0]):
-        ''' Sankariluokkaan lisätty sankarille ominaisuuksiksi viholliset ja luodit.
-        Pelin luonteen vuoksi jokaisella sankarilla tulee olla omat viholliset ja luodit, että voidaan samanaikaisesti
-        tulostaa ruudulle uniikit pelinäkymät, sekä tilanteet
-        '''
+
         self.kuva = kuva
         self.sankari_juoksee = True
         self.sankari_hyppaa = False
@@ -32,7 +29,6 @@ class Sankari:
         self.pisteet = 0
         self.viholliset = []
         self.luodit = []
-        self.alive = True
 
     def paivita(self):
         if self.sankari_juoksee:
@@ -117,7 +113,8 @@ class Luoti():
 
 
 def main():
-    global nopeus, highscore, tausta_x, tausta_y, aika
+    global nopeus, highscore, tausta_x, tausta_y, aika, gameover
+    gameover = False
     kello = pygame.time.Clock()
     sankari = Sankari()
 
@@ -155,7 +152,8 @@ def main():
             vihollinen.paivita(sankari)
 
             if sankari.rect.colliderect(vihollinen.rect):
-                sankari.alive = False
+                pygame.quit()
+                sys.exit()
 
         for j, luoti in enumerate(sankari.luodit):
             if luoti.rect.colliderect(vihollinen.rect):
@@ -163,14 +161,10 @@ def main():
                 sankari.viholliset.pop(0)
                 sankari.pisteet += 1
 
-    while sankari.alive:
+    while not gameover:
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-            if sankari.alive == False:
                 pygame.quit()
                 sys.exit()
 

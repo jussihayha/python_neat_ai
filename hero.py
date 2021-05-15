@@ -1,5 +1,6 @@
-import pygame
 import random
+import math
+
 from assets import *
 
 
@@ -7,7 +8,7 @@ class Hero(pygame.sprite.Sprite):
     X_position = 50
     Y_position = 250
 
-    VELOCITY = 14
+    VELOCITY = 10
 
     def __init__(self, image=RUN[0]):
 
@@ -36,9 +37,10 @@ class Hero(pygame.sprite.Sprite):
         self.step_index += 1
 
     def jump(self):
-        self.hero_jumping = True
-        self.image = JUMP[0]
-        self.hero_running = False
+        if self.rect.x == self.X_position:
+            self.hero_jumping = True
+            self.image = JUMP[0]
+            self.hero_running = False
 
         if self.hero_jumping:
             self.rect.y -= self.velocity * 2
@@ -48,7 +50,11 @@ class Hero(pygame.sprite.Sprite):
             self.hero_running = True
             self.velocity = self.VELOCITY
 
+    def distance(self, enemy):
+            return round(math.sqrt((self.rect.x - enemy[0]) ** 2 + (self.rect.y - enemy[1]) ** 2))
 
-
-    def draw(self, DISPLAY):
+    def draw(self, DISPLAY, enemies):
         DISPLAY.blit(self.image, (self.rect.x, self.rect.y))
+        for enemy in enemies:
+            pygame.draw.line(DISPLAY, self.color, (self.rect.x + 74, self.rect.y + 35), enemy.rect.center, 5)
+

@@ -7,29 +7,35 @@ WIN_WIDTH = 1200
 DISPLAY = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
 pygame.display.set_caption("INTELLIGENT HERO AI JUMPING, OK")
 # HERO images
-RUN = [pygame.transform.scale(pygame.image.load('./assets/sankari-juoksu-1.png'), (128, 128)),
-       pygame.transform.scale(pygame.image.load('./assets/sankari-juoksu-2.png'), (128, 128)),
-       pygame.transform.scale(pygame.image.load('./assets/sankari-juoksu-3.png'), (128, 128)),
-       pygame.transform.scale(pygame.image.load('./assets/sankari-juoksu-4.png'), (128, 128)),
-       pygame.transform.scale(pygame.image.load('./assets/sankari-juoksu-5.png'), (128, 128)),
-       pygame.transform.scale(pygame.image.load('./assets/sankari-juoksu-6.png'), (128, 128))]
+RUN = [pygame.transform.scale(pygame.image.load('./assets/hero-run-1.png'), (128, 128)),
+       pygame.transform.scale(pygame.image.load('./assets/hero-run-2.png'), (128, 128)),
+       pygame.transform.scale(pygame.image.load('./assets/hero-run-3.png'), (128, 128)),
+       pygame.transform.scale(pygame.image.load('./assets/hero-run-4.png'), (128, 128)),
+       pygame.transform.scale(pygame.image.load('./assets/hero-run-5.png'), (128, 128)),
+       pygame.transform.scale(pygame.image.load('./assets/hero-run-6.png'), (128, 128))]
 
-JUMP = [pygame.transform.scale(pygame.image.load('./assets/sankari-hyppy-1.png'), (128, 128)),
-        pygame.transform.scale(pygame.image.load('./assets/sankari-hyppy-1.png'), (128, 128)),
-        pygame.transform.scale(pygame.image.load('./assets/sankari-hyppy-2.png'), (128, 128)),
-        pygame.transform.scale(pygame.image.load('./assets/sankari-hyppy-2.png'), (128, 128)),
-        pygame.transform.scale(pygame.image.load('./assets/sankari-hyppy-3.png'), (128, 128)),
-        pygame.transform.scale(pygame.image.load('./assets/sankari-hyppy-3.png'), (128, 128))
+JUMP = [pygame.transform.scale(pygame.image.load('./assets/hero-jump-1.png'), (128, 128)),
+        pygame.transform.scale(pygame.image.load('./assets/hero-jump-1.png'), (128, 128)),
+        pygame.transform.scale(pygame.image.load('./assets/hero-jump-2.png'), (128, 128)),
+        pygame.transform.scale(pygame.image.load('./assets/hero-jump-2.png'), (128, 128)),
+        pygame.transform.scale(pygame.image.load('./assets/hero-jump-3.png'), (128, 128)),
+        pygame.transform.scale(pygame.image.load('./assets/hero-jump-3.png'), (128, 128))
         ]
 
 # ENEMY PICTURES
-ENEMY = [
-    pygame.transform.flip(pygame.transform.scale(pygame.image.load('./assets/vihu1.png'), (96, 96)), True, False),
-    pygame.transform.flip(pygame.transform.scale(pygame.image.load('./assets/vihu2.png'), (96, 96)), True, False),
-    pygame.transform.flip(pygame.transform.scale(pygame.image.load('./assets/vihu3.png'), (96, 96)), True, False),
-    pygame.transform.flip(pygame.transform.scale(pygame.image.load('./assets/vihu4.png'), (96, 96)), True, False)]
+SMALL_ENEMY = [
+    pygame.transform.flip(pygame.transform.scale(pygame.image.load('./assets/enemy1.png'), (96, 96)), True, False),
+    pygame.transform.flip(pygame.transform.scale(pygame.image.load('./assets/enemy2.png'), (96, 96)), True, False),
+    pygame.transform.flip(pygame.transform.scale(pygame.image.load('./assets/enemy3.png'), (96, 96)), True, False),
+    pygame.transform.flip(pygame.transform.scale(pygame.image.load('./assets/enemy4.png'), (96, 96)), True, False)]
+
+LARGE_ENEMY = [
+    pygame.transform.flip(pygame.transform.scale2x(pygame.image.load('./assets/enemy1.png')), True, False),
+    pygame.transform.flip(pygame.transform.scale2x(pygame.image.load('./assets/enemy2.png')), True, False),
+    pygame.transform.flip(pygame.transform.scale2x(pygame.image.load('./assets/enemy3.png')), True, False),
+    pygame.transform.flip(pygame.transform.scale2x(pygame.image.load('./assets/enemy4.png')), True, False)]
 
 # RANDOM VARIABLES
-BG = pygame.transform.scale(pygame.image.load('./assets/tausta.png'), (1200, 512))
-BULLET = pygame.transform.scale(pygame.image.load('./assets/ammus.png'), (30, 30))
+BG = pygame.transform.scale(pygame.image.load('./assets/background.png'), (1200, 512))
+
 FONT = pygame.font.Font('./assets/gothic_pixel.ttf', 40)
