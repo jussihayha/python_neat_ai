@@ -1,4 +1,4 @@
-from assets import *
+from assets.assets import *
 
 
 class Background:

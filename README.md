@@ -35,29 +35,35 @@ I have defined the following inputs for NEAT-activation:
 
 There is only one output currently. The AI must decide to jump or not.
 
-### Used packages
-
+### Used packages and gotchas
+- Python 3.7
+- pip3  
 - pygame (for creating the game)
 - neat-python
 - pickle (for saving trained model locally)
 - argparse (handling arguments in commandline)
 
+I tested the game in Python 3.8.5 without problems also.
 ### Example video
 
 Before installing, you can see the game in action in www.youtube.com
 
 ### Installation
 
-I recommend that you create a separate environment for this.
+You need to have Python and PIP installed.  
+You can find instructions on how to do that in many locations.
 
+My recommendation is that you create a new virtual environment for this project  
+so that the project lives in isolation. 
+
+You can find many solutions on how to handle virtual environments I recommend that you
+check them out. This is not mandatory for this project to work.
 ```
- $ venv venv sbin activate jtaoin
  $ git clone https://github.com/jussihayha/python-neat-ai
  $ pip install -r requirements.txt
-
 ```
 
-### Usage
+### Usage 
 
 You can use this repository for running a pretrained AI that was run for 1000 generations.  
 You can also choose to try this game for yourself. This is in file single_player.py.
@@ -73,26 +79,32 @@ $ python single_player.py
 #### Checking out pretrained AI
 
 Use switch `--replay` together with a .pkl filename you want to replay. Replays the best genome in a previous run.
-
+Default load and save location is models folder so keep that in mind.
 ```
 $ python main.py --replay <filename>
 ```
 
 #### Training a new model / AI
 
-Use switch `--train` together with an integer number preferably over 10. After training is over it creates a file called
-winner-10.pkl (integer value of the filename changes based on your parameter).
+Use switch `--train` together with an integer number preferably over 5.  
+In this projects context training means that you get to watch the AI trying to learn the game.
+
+In previous iterations of this project 1 generation of genomes started at once, but I found
+out that understanding the different genomes and 'heroes' is hard when you cannot watch them one by one.
+
+After training is over it creates a file called winner-10.pkl to models folder (integer value of the filename changes based on your parameter).
 
 ```
-$ python main.py --train 1000
+$ python main.py --train 10
 ```
 
 ### TODO
-
-- continue translating finnish to english
+Here are a few of the things this I still should do
+- continue translating finnish to english - or refactor singleplayer
 - reconfigure and analyze inputs for neat activation
 - work on progressing the configuration file
 - add shooting and stomping capabilities in the AI-version
+- add proper comments to classes and other files
 
 ### Acknowledgements
 

@@ -1,7 +1,7 @@
 ﻿import random
 import sys
 
-from assets import *
+from assets.assets import *
 
 pygame.init()
 aika = 0
@@ -63,6 +63,8 @@ class Sankari:
 
     def piirra(self, DISPLAY):
         DISPLAY.blit(self.kuva, (self.rect.x, self.rect.y))
+        # Demoa varten
+        #pygame.draw.rect(DISPLAY, self.vari, self.rect)
         for vihollinen in self.viholliset:
             pygame.draw.line(DISPLAY, self.vari, (self.rect.x + 74, self.rect.y + 35), vihollinen.rect.center, 5)
 
@@ -92,7 +94,8 @@ class Vihollinen():
 
     def piirra(self, DISPLAY):
         DISPLAY.blit(self.kuva, self.rect)
-
+        # Demoa varten
+        #pygame.draw.rect(DISPLAY, self.vari, self.rect)
 
 class Luoti():
     def __init__(self, nopeus, x_positio, y_positio, kuva=BULLET):
@@ -129,11 +132,13 @@ def main():
         tausta_x -= nopeus
 
     def pistelasku():
+        luoteja_jaljella = '@' * (5 - len(sankari.luodit))
         enkkateksti = FONT.render(f'ENNATYS   {str(highscore)}', True, (0, 0, 0))
         nopeusteksti = FONT.render(f'NOPEUS {str(nopeus)}', True, (0, 0, 0))
-    #    luodit = FONT.render(f'LUODIT {str(5 - int(len(sankari.luodit)))}')
+        luodit = FONT.render(f'LUODIT {str(luoteja_jaljella)}', True, (0, 0, 0))
         DISPLAY.blit(enkkateksti, (900, 480))
         DISPLAY.blit(nopeusteksti, (900, 440))
+        DISPLAY.blit(luodit, (200, 480))
 
     def pelilooppi(sankari):
         global highscore

@@ -1,7 +1,7 @@
-import random
 import math
+import random
 
-from assets import *
+from assets.assets import *
 
 
 class Hero(pygame.sprite.Sprite):
@@ -51,10 +51,9 @@ class Hero(pygame.sprite.Sprite):
             self.velocity = self.VELOCITY
 
     def distance(self, enemy):
-            return round(math.sqrt((self.rect.x - enemy[0]) ** 2 + (self.rect.y - enemy[1]) ** 2))
+        return round(math.sqrt((self.rect.x - enemy[0]) ** 2 + (self.rect.y - enemy[1]) ** 2))
 
     def draw(self, DISPLAY, enemies):
         DISPLAY.blit(self.image, (self.rect.x, self.rect.y))
         for enemy in enemies:
             pygame.draw.line(DISPLAY, self.color, (self.rect.x + 74, self.rect.y + 35), enemy.rect.center, 5)
-

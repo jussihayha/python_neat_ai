@@ -1,16 +1,16 @@
 import random
 import sys
 
-from assets import *
-from background import Background
-from enemy import LargeEnemy, SmallEnemy
+from assets.assets import *
+from classes.background import Background
+from classes.enemy import LargeEnemy, SmallEnemy
 
 highscore = 0
 
 
 class Game:
 
-    def __init__(self, genome, net, hero, index, pop):
+    def __init__(self, genome, net, hero, index, pop, replaymode):
         self.speed = 14
         self.points = 0
         self.bg_x = 0
@@ -24,6 +24,7 @@ class Game:
         self.alive = True
         self.hero = hero
         self.index = index
+        self.replaymode = replaymode
 
     def play(self):
         global highscore
@@ -93,8 +94,8 @@ class Game:
             self.genome.fitness += 0.2
 
     def statistics(self):
-
-        if len(self.pop.population) > 1:
+        global pop
+        if not self.replaymode:
             hero_number = FONT.render(f'HERO  {str(self.index)} OUT OF {str(len(self.pop.population))}', True,
                                       (0, 0, 0))
             generation_number = FONT.render(f'GENERATION  {self.pop.generation + 1}', True, (0, 0, 0))

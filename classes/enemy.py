@@ -1,8 +1,6 @@
 import random
-from assets import *
-import random
 
-from assets import *
+from assets.assets import *
 
 
 class Enemy(pygame.sprite.Sprite):
