@@ -1,7 +1,7 @@
 ﻿import random
 import sys
 
-from assets_singleplayer import *
+from assets import *
 
 pygame.init()
 aika = 0
@@ -17,7 +17,7 @@ class Sankari:
 
     PONNISTUSVOIMA = 14
 
-    def __init__(self, kuva=JUOKSU[0]):
+    def __init__(self, kuva=RUN[0]):
 
         self.kuva = kuva
         self.sankari_juoksee = True
@@ -40,14 +40,14 @@ class Sankari:
             self.askel_indeksi = 0
 
     def juokse(self):
-        self.kuva = JUOKSU[self.askel_indeksi // 6]
+        self.kuva = RUN[self.askel_indeksi // 6]
         self.rect.x = self.X_positio
         self.rect.y = self.Y_positio
         self.askel_indeksi += 1
 
     def hyppaa(self):
         self.sankari_hyppaa = True
-        self.kuva = HYPPY[0]
+        self.kuva = JUMP[0]
         self.sankari_juoksee = False
 
         if self.sankari_hyppaa:
@@ -61,27 +61,27 @@ class Sankari:
     def laskeudu(self):
         self.ponnistusvoima -= self.PONNISTUSVOIMA * 0.9
 
-    def piirra(self, NAYTTO):
-        NAYTTO.blit(self.kuva, (self.rect.x, self.rect.y))
+    def piirra(self, DISPLAY):
+        DISPLAY.blit(self.kuva, (self.rect.x, self.rect.y))
         for vihollinen in self.viholliset:
-            pygame.draw.line(NAYTTO, self.vari, (self.rect.x + 74, self.rect.y + 35), vihollinen.rect.center, 5)
+            pygame.draw.line(DISPLAY, self.vari, (self.rect.x + 74, self.rect.y + 35), vihollinen.rect.center, 5)
 
         for luoti in self.luodit:
-            luoti.piirra(NAYTTO)
+            luoti.piirra(DISPLAY)
             luoti.paivita(self)
 
 
 class Vihollinen():
-    def __init__(self, kuva=VIHOLLINEN[0]):
+    def __init__(self, kuva=SMALL_ENEMY[0]):
         self.kuva = kuva
         self.rect = self.kuva.get_rect()
-        self.rect.x = IKKUNA_LEVEYS + random.randint(0, 250)
+        self.rect.x = WIN_WIDTH + random.randint(0, 250)
         self.rect.y = random.randint(50, 287)
         self.askel_indeksi = 0
         self.vari = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 
-    def paivita(self, sankari, kuva=VIHOLLINEN[0]):
-        self.kuva = VIHOLLINEN[self.askel_indeksi // 9]
+    def paivita(self, sankari):
+        self.kuva = SMALL_ENEMY[self.askel_indeksi // 9]
         self.askel_indeksi += 1
 
         self.rect.x -= nopeus
@@ -90,12 +90,12 @@ class Vihollinen():
         if self.rect.x < 0:
             sankari.viholliset.pop()
 
-    def piirra(self, NAYTTO):
-        NAYTTO.blit(self.kuva, self.rect)
+    def piirra(self, DISPLAY):
+        DISPLAY.blit(self.kuva, self.rect)
 
 
 class Luoti():
-    def __init__(self, nopeus, x_positio, y_positio, kuva=LUOTI):
+    def __init__(self, nopeus, x_positio, y_positio, kuva=BULLET):
         self.kuva = kuva
         self.nopeus = nopeus + 2
         self.rect = self.kuva.get_rect()
@@ -105,11 +105,11 @@ class Luoti():
 
     def paivita(self, sankari):
         self.rect.x += self.nopeus
-        if self.rect.x > IKKUNA_LEVEYS:
+        if self.rect.x > WIN_WIDTH:
             sankari.luodit.pop(0)
 
-    def piirra(self, NAYTTO):
-        NAYTTO.blit(self.kuva, self.rect)
+    def piirra(self, DISPLAY):
+        DISPLAY.blit(self.kuva, self.rect)
 
 
 def main():
@@ -120,25 +120,26 @@ def main():
 
     def tausta():
         global tausta_x, tausta_y
-        kuva_leveys = TAUSTA.get_width()
-        NAYTTO.blit(TAUSTA, (tausta_x, tausta_y))
-        NAYTTO.blit(TAUSTA, (kuva_leveys + tausta_x, tausta_y))
+        kuva_leveys = BG.get_width()
+        DISPLAY.blit(BG, (tausta_x, tausta_y))
+        DISPLAY.blit(BG, (kuva_leveys + tausta_x, tausta_y))
 
         if tausta_x <= -kuva_leveys:
             tausta_x = 0
         tausta_x -= nopeus
 
     def pistelasku():
-        enkkateksti = FONTTI.render(f'ENNATYS   {str(highscore)}', True, (0, 0, 0))
-        nopeusteksti = FONTTI.render(f'NOPEUS {str(nopeus)}', True, (0, 0, 0))
-        NAYTTO.blit(enkkateksti, (900, 480))
-        NAYTTO.blit(nopeusteksti, (900, 440))
+        enkkateksti = FONT.render(f'ENNATYS   {str(highscore)}', True, (0, 0, 0))
+        nopeusteksti = FONT.render(f'NOPEUS {str(nopeus)}', True, (0, 0, 0))
+    #    luodit = FONT.render(f'LUODIT {str(5 - int(len(sankari.luodit)))}')
+        DISPLAY.blit(enkkateksti, (900, 480))
+        DISPLAY.blit(nopeusteksti, (900, 440))
 
     def pelilooppi(sankari):
         global highscore
         tarkista_osumat(sankari)
         sankari.paivita()
-        sankari.piirra(NAYTTO)
+        sankari.piirra(DISPLAY)
 
         if len(sankari.viholliset) < 1:
             sankari.viholliset.append(Vihollinen())
@@ -148,7 +149,7 @@ def main():
 
     def tarkista_osumat(sankari):
         for vihollinen in sankari.viholliset:
-            vihollinen.piirra(NAYTTO)
+            vihollinen.piirra(DISPLAY)
             vihollinen.paivita(sankari)
 
             if sankari.rect.colliderect(vihollinen.rect):
@@ -172,13 +173,14 @@ def main():
                 if event.key == pygame.K_SPACE:
                     sankari.sankari_hyppaa = True
 
-                if event.key == pygame.K_z and sankari.rect.x != 300:
+                if event.key == pygame.K_z and sankari.rect.x is not 300:
                     sankari.laskeudu()
 
                 if event.key == pygame.K_c:
-                    sankari.luodit.append(Luoti(nopeus, sankari.rect.x, sankari.rect.y))
+                    if len(sankari.luodit) < 5:
+                        sankari.luodit.append(Luoti(nopeus, sankari.rect.x, sankari.rect.y))
 
-        NAYTTO.fill((255, 255, 255))
+        DISPLAY.fill((255, 255, 255))
         tausta()
         pelilooppi(sankari)
         pistelasku()

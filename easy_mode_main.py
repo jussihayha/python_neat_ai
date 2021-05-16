@@ -6,9 +6,8 @@ import pickle
 import neat
 
 from assets import *
-
-from hero import Hero
 from game import Game
+from hero import Hero
 
 pygame.init()
 highscore = 0
@@ -20,6 +19,7 @@ def distance(a, b):
 
 def eval_genomes(genomes, config):
     index = 0
+    pop = neat.Population(config)
     for genome_id, genome in genomes:
         index += 1
         genome.fitness = 0
@@ -27,12 +27,6 @@ def eval_genomes(genomes, config):
         hero = Hero()
         game = Game(genome, net, hero, index, pop)
         game.play()
-
-
-
-
-
-
 
 
 def run(config_path, generations):

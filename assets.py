@@ -37,5 +37,5 @@ LARGE_ENEMY = [
 
 # RANDOM VARIABLES
 BG = pygame.transform.scale(pygame.image.load('./assets/background.png'), (1200, 512))
-
+BULLET = pygame.transform.scale(pygame.image.load('assets/bullet.png'), (30, 30))
 FONT = pygame.font.Font('./assets/gothic_pixel.ttf', 40)
