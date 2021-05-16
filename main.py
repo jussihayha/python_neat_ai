@@ -7,17 +7,21 @@ import neat
 
 from classes.game import Game
 from classes.hero import Hero
+from plotter import plot
 
 highscore = 0
-
+plotter_scores = []
+total_score = 0
+mean_score = 0
 
 def distance(a, b):
     return round(math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2))
 
 
 def eval_genomes(genomes, config):
+    global plotter_scores, total_score, mean_score, pop
     index = 0
-    pop = neat.Population(config)
+
     for genome_id, genome in genomes:
         index += 1
         genome.fitness = 0
@@ -25,10 +29,15 @@ def eval_genomes(genomes, config):
         hero = Hero()
 
         if len(genomes) == 1:
+            pop = neat.Population(config)
             game = Game(genome, net, hero, index, pop, replaymode=True)
         else:
             game = Game(genome, net, hero, index, pop, replaymode=False)
         game.play()
+        plotter_scores.append(game.points)
+        total_score += game.points
+        plot(plotter_scores)
+
 
 
 def run(config_path, generations):
@@ -43,14 +52,15 @@ def run(config_path, generations):
 
     pop = neat.Population(config)
     pop.add_reporter(neat.StdOutReporter(True))
-    statistics = neat.StatisticsReporter()
-    pop.add_reporter(statistics)
+    stats = neat.StatisticsReporter()
+    pop.add_reporter(stats)
     winner = pop.run(eval_genomes, generations)
     print('\nBest genome:\n{!s}'.format(winner))
     pickle.dump(winner, open(f'./models/winner_{generations}.pkl', 'wb'))
 
 
 def replay_genome(config_path, filename):
+
     # Load requried NEAT config
     config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet,
                                 neat.DefaultStagnation, config_path)

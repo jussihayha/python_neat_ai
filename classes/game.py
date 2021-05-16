@@ -1,6 +1,6 @@
 import random
 import sys
-
+from plotter import plot
 from assets.assets import *
 from classes.background import Background
 from classes.enemy import LargeEnemy, SmallEnemy
@@ -94,11 +94,11 @@ class Game:
             self.genome.fitness += 0.2
 
     def statistics(self):
-        global pop
+        print(self.pop.generation)
         if not self.replaymode:
             hero_number = FONT.render(f'HERO  {str(self.index)} OUT OF {str(len(self.pop.population))}', True,
                                       (0, 0, 0))
-            generation_number = FONT.render(f'GENERATION  {self.pop.generation + 1}', True, (0, 0, 0))
+            generation_number = FONT.render(f'GENERATION  {str(self.pop.generation + 1)}', True, (0, 0, 0))
             DISPLAY.blit(hero_number, (50, 450))
             DISPLAY.blit(generation_number, (50, 480))
 
