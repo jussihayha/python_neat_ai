@@ -1,4 +1,6 @@
-﻿import argparse
+﻿from __future__ import print_function
+
+import argparse
 import math
 import os
 import pickle
@@ -7,19 +9,16 @@ import neat
 
 from classes.game import Game
 from classes.hero import Hero
-from plotter import plot
 
 highscore = 0
-plotter_scores = []
-total_score = 0
-mean_score = 0
+
 
 def distance(a, b):
     return round(math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2))
 
 
 def eval_genomes(genomes, config):
-    global plotter_scores, total_score, mean_score, pop
+    global pop
     index = 0
 
     for genome_id, genome in genomes:
@@ -34,10 +33,6 @@ def eval_genomes(genomes, config):
         else:
             game = Game(genome, net, hero, index, pop, replaymode=False)
         game.play()
-        plotter_scores.append(game.points)
-        total_score += game.points
-        plot(plotter_scores)
-
 
 
 def run(config_path, generations):
@@ -60,16 +55,12 @@ def run(config_path, generations):
 
 
 def replay_genome(config_path, filename):
-
-    # Load requried NEAT config
     config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet,
                                 neat.DefaultStagnation, config_path)
 
-    # Unpickle saved winner
     with open(f'./models/{filename}', 'rb') as file:
         genome = pickle.load(file)
 
-    # Convert loaded genome into required data structure
     genomes = [(1, genome)]
     eval_genomes(genomes, config)
 

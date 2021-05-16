@@ -64,7 +64,7 @@ class Sankari:
     def piirra(self, DISPLAY):
         DISPLAY.blit(self.kuva, (self.rect.x, self.rect.y))
         # Demoa varten
-        #pygame.draw.rect(DISPLAY, self.vari, self.rect)
+        pygame.draw.rect(DISPLAY, self.vari, self.rect)
         for vihollinen in self.viholliset:
             pygame.draw.line(DISPLAY, self.vari, (self.rect.x + 74, self.rect.y + 35), vihollinen.rect.center, 5)
 
@@ -95,7 +95,7 @@ class Vihollinen():
     def piirra(self, DISPLAY):
         DISPLAY.blit(self.kuva, self.rect)
         # Demoa varten
-        #pygame.draw.rect(DISPLAY, self.vari, self.rect)
+        pygame.draw.rect(DISPLAY, self.vari, self.rect)
 
 class Luoti():
     def __init__(self, nopeus, x_positio, y_positio, kuva=BULLET):

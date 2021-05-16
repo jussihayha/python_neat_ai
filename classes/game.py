@@ -1,6 +1,6 @@
 import random
 import sys
-from plotter import plot
+
 from assets.assets import *
 from classes.background import Background
 from classes.enemy import LargeEnemy, SmallEnemy
@@ -40,9 +40,7 @@ class Game:
                     sys.exit()
 
             self.background.draw(DISPLAY, self.speed)
-
             self.spawn_enemy()
-
             self.hero.update()
             self.hero.draw(DISPLAY, self.enemies)
             self.get_action()
@@ -54,8 +52,7 @@ class Game:
                 if enemy.rect.x < 0:
                     self.enemies.pop(0)
 
-            self.add_points_and_speed()
-
+            self.check_highscore_and_add_speed()
             self.points += 1
             self.statistics()
             self.clock.tick(30)
@@ -78,7 +75,7 @@ class Game:
         if output[0] > 0.5:
             self.hero.hero_jumping = True
 
-    def add_points_and_speed(self):
+    def check_highscore_and_add_speed(self):
         global highscore
         if self.points % 100 == 0:
             self.speed += 1
@@ -94,7 +91,6 @@ class Game:
             self.genome.fitness += 0.2
 
     def statistics(self):
-        print(self.pop.generation)
         if not self.replaymode:
             hero_number = FONT.render(f'HERO  {str(self.index)} OUT OF {str(len(self.pop.population))}', True,
                                       (0, 0, 0))

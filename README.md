@@ -8,6 +8,9 @@ This repository demonstrates a simple game and how to implement NEAT-algorithm w
 During the process I created two separate things. A buggy singleplayer game and a less buggy, but feature poor AI
 driven 'running game'.
 
+### NEAT in a nutshell
+- 
+
 ### Objectives of the games (Singleplayer vs AI )
 
 During the development process of the AI singleplayer version and AI-version went to different directions. The
@@ -15,6 +18,7 @@ singleplayer version has a few more features:
 
 - you are able to shoot the enemies
 - you can increase your descend velocity -> get back to the ground faster
+- 
 
 Also the language in the singleplayer version is finnish and I cannot be bothered to fix it all.
 
@@ -36,14 +40,14 @@ I have defined the following inputs for NEAT-activation:
 There is only one output currently. The AI must decide to jump or not.
 
 ### Used packages and gotchas
-- Python 3.7
-- pip3  
+
+The project works atleast in Python 3.7 and 3.8.5
+
 - pygame (for creating the game)
 - neat-python
 - pickle (for saving trained model locally)
 - argparse (handling arguments in commandline)
 
-I tested the game in Python 3.8.5 without problems also.
 ### Example video
 
 Before installing, you can see the game in action in www.youtube.com
@@ -65,7 +69,8 @@ check them out. This is not mandatory for this project to work.
 
 ### Usage 
 
-You can use this repository for running a pretrained AI that was run for 1000 generations.  
+You can use this repository for running a pretrained AI that was run for 3, 5 or 100 generations.  
+If you want you can tweak the repository and train your own AI and save that model.
 You can also choose to try this game for yourself. This is in file single_player.py.
 
 #### Single player usage
@@ -100,16 +105,17 @@ $ python main.py --train 10
 
 ### TODO
 Here are a few of the things this I still should do
-- continue translating finnish to english - or refactor singleplayer
+- continue translating finnish to english and refactor singleplayer
 - reconfigure and analyze inputs for neat activation
 - work on progressing the configuration file
 - add shooting and stomping capabilities in the AI-version
 - add proper comments to classes and other files
+- create a better AI - add complexity to the game
+
 
 ### Acknowledgements
 
-Kenneth O. Stanley and Risto Miikkulainen for publishing the paper on 'Evolving Neural Networks through Augmenting
-Topologies'  
+Kenneth O. Stanley and Risto Miikkulainen for publishing the paper on 'Evolving Neural Networks through Augmenting Topologies'  
 CodeBullet for providing humorous videos about creating and figuring out how to operate AI's in different scenarios.
 
 I did not make the assets myself. The used background image uses GPL 3.0 and you can find it here:
