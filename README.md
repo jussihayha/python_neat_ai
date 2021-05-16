@@ -8,17 +8,13 @@ This repository demonstrates a simple game and how to implement NEAT-algorithm w
 During the process I created two separate things. A buggy singleplayer game and a less buggy, but feature poor AI
 driven 'running game'.
 
-### NEAT in a nutshell
-- 
-
 ### Objectives of the games (Singleplayer vs AI )
 
 During the development process of the AI singleplayer version and AI-version went to different directions. The
 singleplayer version has a few more features:
 
-- you are able to shoot the enemies
+- you are able to shoot the enemies (you can have 5 bullets in air at the same time)
 - you can increase your descend velocity -> get back to the ground faster
-- 
 
 Also the language in the singleplayer version is finnish and I cannot be bothered to fix it all.
 
@@ -28,6 +24,18 @@ time you've been alive.
 In the singleplayer version you get points by shooting the enemies, your goal is to get as many points as possible.
 
 The speed of the game gradually increases in both versions.
+
+AI-version has one thing that is massively better than the singleplayer one - that is pixel perfect collision detection.
+When I first started the project I kept wondering why the AI was dying even when not touching the obstacles.  
+After I drew some rectangle shapes to understand the hitboxes it hit me.
+
+The hitboxes are massive compared to the actual player masks / images. 
+
+I've added a couple of gifs that demonstrate the singleplayer game + the problem. 
+I'll add a few gifs about the AI-version as soon as I get the images processed.
+
+![single_player_blocks](readme_assets/single_player_hitboxes.gif)
+![single_player_normal](readme_assets/single_player_normal.gif)
 
 ### Inputs and outputs
 
@@ -48,9 +56,8 @@ The project works atleast in Python 3.7 and 3.8.5
 - pickle (for saving trained model locally)
 - argparse (handling arguments in commandline)
 
-### Example video
+### Example video 
 
-Before installing, you can see the game in action in www.youtube.com
 
 ### Installation
 
