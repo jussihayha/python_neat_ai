@@ -1,7 +1,4 @@
-﻿from __future__ import print_function
-
-import argparse
-import math
+﻿import argparse
 import os
 import pickle
 
@@ -11,10 +8,6 @@ from classes.game import Game
 from classes.hero import Hero
 
 highscore = 0
-
-
-def distance(a, b):
-    return round(math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2))
 
 
 def eval_genomes(genomes, config):
