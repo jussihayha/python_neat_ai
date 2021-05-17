@@ -9,7 +9,7 @@ class Enemy(pygame.sprite.Sprite):
         self.image = image
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
-        self.rect.x = WIN_WIDTH + random.randint(250, 600)
+        self.rect.x = WIN_WIDTH - random.randint(150, 200)
         self.rect.y = 300
         self.step_index = 0
         self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
