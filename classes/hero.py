@@ -5,7 +5,7 @@ from assets.assets import *
 
 
 class Hero(pygame.sprite.Sprite):
-    X_position = 50
+    X_position = 90
     Y_position = 250
 
     VELOCITY = 10
@@ -56,4 +56,4 @@ class Hero(pygame.sprite.Sprite):
     def draw(self, DISPLAY, enemies):
         DISPLAY.blit(self.image, (self.rect.x, self.rect.y))
         for enemy in enemies:
-            pygame.draw.line(DISPLAY, self.color, (self.rect.x + 74, self.rect.y + 35), enemy.rect.center, 5)
+            pygame.draw.line(DISPLAY, self.color, (self.rect.x + 74, self.rect.y + 35), (enemy.rect.x, enemy.rect.y), 5)

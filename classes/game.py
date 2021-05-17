@@ -4,13 +4,14 @@ import sys
 from assets.assets import *
 from classes.background import Background
 from classes.enemy import LargeEnemy, SmallEnemy
+from classes.hero import Hero
 
 highscore = 0
 
 
 class Game:
 
-    def __init__(self, genome, net, hero, index, pop, replaymode):
+    def __init__(self, genome, net, index, pop, replaymode):
         self.speed = 14
         self.points = 0
         self.bg_x = 0
@@ -22,7 +23,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.background = Background()
         self.alive = True
-        self.hero = hero
+        self.hero = Hero()
         self.index = index
         self.replaymode = replaymode
 

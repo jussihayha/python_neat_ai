@@ -30,10 +30,10 @@ SMALL_ENEMY = [
     pygame.transform.flip(pygame.transform.scale(pygame.image.load('./assets/enemy4.png'), (96, 96)), True, False)]
 
 LARGE_ENEMY = [
-    pygame.transform.flip(pygame.transform.scale2x(pygame.image.load('./assets/enemy1.png')), True, False),
-    pygame.transform.flip(pygame.transform.scale2x(pygame.image.load('./assets/enemy2.png')), True, False),
-    pygame.transform.flip(pygame.transform.scale2x(pygame.image.load('./assets/enemy3.png')), True, False),
-    pygame.transform.flip(pygame.transform.scale2x(pygame.image.load('./assets/enemy4.png')), True, False)]
+    pygame.transform.flip(pygame.transform.scale(pygame.image.load('./assets/enemy1.png'), (240, 96)), True, False),
+    pygame.transform.flip(pygame.transform.scale(pygame.image.load('./assets/enemy2.png'), (240, 96)), True, False),
+    pygame.transform.flip(pygame.transform.scale(pygame.image.load('./assets/enemy3.png'), (240, 96)), True, False),
+    pygame.transform.flip(pygame.transform.scale(pygame.image.load('./assets/enemy4.png'), (240, 96)), True, False)]
 
 # RANDOM VARIABLES
 BG = pygame.transform.scale(pygame.image.load('./assets/background.png'), (1200, 512))

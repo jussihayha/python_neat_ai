@@ -5,9 +5,6 @@ import pickle
 import neat
 
 from classes.game import Game
-from classes.hero import Hero
-
-highscore = 0
 
 
 def eval_genomes(genomes, config):
@@ -18,14 +15,15 @@ def eval_genomes(genomes, config):
         index += 1
         genome.fitness = 0
         net = neat.nn.FeedForwardNetwork.create(genome, config)
-        hero = Hero()
 
         if len(genomes) == 1:
             pop = neat.Population(config)
-            game = Game(genome, net, hero, index, pop, replaymode=True)
+            game = Game(genome, net, index, pop, replaymode=True)
         else:
-            game = Game(genome, net, hero, index, pop, replaymode=False)
+            game = Game(genome, net, index, pop, replaymode=False)
         game.play()
+        print(genome.fitness)
+
 
 
 def run(config_path, generations):
