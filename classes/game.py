@@ -31,14 +31,13 @@ class Game:
         self.enemies_shot = 0
         self.enemies_missed = 0
 
-
     def play(self):
         global highscore
         run = True
 
         while run:
             # Run while hero is alive
-            if self.hero.alive == False:
+            if not self.hero.alive or self.points > 8000:
                 break
 
             # Basic for loop in Pygame for enabling closing window from X
@@ -52,11 +51,13 @@ class Game:
             self.hero.draw()
             self.hero.update()
             self.get_hero_action()
+
             for enemy in self.enemies:
                 enemy.update(self.speed)
                 enemy.draw(DISPLAY)
+                # Check if enemy has collided with hero
                 self.check_collision(enemy)
-
+                # If enemy has passed the screen, give fitness to genome, and pop the enemy
                 if enemy.rect.x < 0:
                     self.genome.fitness += 0.02
                     self.enemies.pop(0)
@@ -64,8 +65,9 @@ class Game:
             for bullet in self.bullets:
                 bullet.update(self.speed)
                 bullet.draw(DISPLAY)
+                # Check if bullet hits enemy
                 self.check_shot_enemy(bullet)
-
+                # If bullet has passed screen -> remove bullet and give negative fitness
                 if bullet.rect.x > 1200:
                     self.genome.fitness -= 0.02
                     self.bullets.pop(0)
@@ -87,15 +89,21 @@ class Game:
                 self.enemies.append(SmallEnemy(image=SMALL_ENEMY[0]))
 
     def get_hero_action(self):
+        # Calculate distance between enemy and hero
         distance_between_enemy = self.hero.distance((self.enemies[0].rect.x, self.enemies[0].rect.y))
+        # inputs are:
+        # speed of the game
+        # distance between enemy and hero
+        # enemy y-position
+        # hero y-position
+        # amount of bullets on the screen
         output = self.net.activate(
-            (self.speed, distance_between_enemy, self.enemies[0].rect.y, self.hero.rect.y, self.bullets_left))
+            (self.speed, distance_between_enemy, self.enemies[0].rect.y, self.hero.rect.y, len(self.bullets)))
 
         if output[0] > 0.5:
             self.hero.hero_jumping = True
 
         if output[1] > 0.5:
-            print("Shoot")
             self.bullets.append(Bullet(self.speed, self.hero.rect.x, self.hero.rect.y))
 
     def check_highscore_and_add_speed(self):
@@ -116,19 +124,11 @@ class Game:
                 self.bullets.pop(0)
                 self.enemies.pop(0)
 
-
-
-
     def check_collision(self, enemy):
         current_enemy = pygame.sprite.Group(enemy)
         if pygame.sprite.spritecollide(self.hero, current_enemy, False, pygame.sprite.collide_mask):
-
             self.genome.fitness -= 10
             self.hero.alive = False
-
-
-        print(self.genome.fitness)
-
 
     def statistics(self):
         if not self.replaymode:
@@ -144,7 +144,6 @@ class Game:
         highscore_points = FONT.render(f'HIGHSCORE {str(highscore)}', True, (0, 0, 0))
 
         game_speed = FONT.render(f'GAME SPEED  {str(self.speed)}', True, (0, 0, 0))
-
 
         DISPLAY.blit(missed_enemies, (900, 390))
         DISPLAY.blit(shot_enemies, (900, 420))

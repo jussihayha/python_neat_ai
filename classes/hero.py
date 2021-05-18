@@ -8,7 +8,7 @@ class Hero(pygame.sprite.Sprite):
     X_position = 90
     Y_position = 250
 
-    VELOCITY = 10
+    VELOCITY = 13
 
     def __init__(self, image=RUN[0]):
         super().__init__()
