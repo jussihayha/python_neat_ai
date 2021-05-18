@@ -10,7 +10,7 @@ class Background:
         self.width = self.image.get_width()
         self.rect = image.get_rect()
 
-    def draw(self, DISPLAY, speed):
+    def draw(self, speed):
         DISPLAY.fill((255, 255, 255))
         DISPLAY.blit(self.image, (self.rect.x, self.rect.y))
         DISPLAY.blit(self.image, (self.width + self.rect.x, self.rect.y))

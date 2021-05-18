@@ -22,7 +22,7 @@ def eval_genomes(genomes, config):
         else:
             game = Game(genome, net, index, pop, replaymode=False)
         game.play()
-        print(genome.fitness)
+
 
 
 

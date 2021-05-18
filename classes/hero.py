@@ -2,7 +2,7 @@ import math
 import random
 
 from assets.assets import *
-
+from classes.bullet import Bullet
 
 class Hero(pygame.sprite.Sprite):
     X_position = 90
@@ -11,7 +11,7 @@ class Hero(pygame.sprite.Sprite):
     VELOCITY = 10
 
     def __init__(self, image=RUN[0]):
-
+        super().__init__()
         self.image = image
         self.hero_running = True
         self.hero_jumping = False
@@ -20,6 +20,8 @@ class Hero(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
         self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+
+
 
     def update(self):
         if self.hero_running:
@@ -53,7 +55,7 @@ class Hero(pygame.sprite.Sprite):
     def distance(self, enemy):
         return round(math.sqrt((self.rect.x - enemy[0]) ** 2 + (self.rect.y - enemy[1]) ** 2))
 
-    def draw(self, DISPLAY, enemies):
+    def draw(self):
         DISPLAY.blit(self.image, (self.rect.x, self.rect.y))
-        for enemy in enemies:
-            pygame.draw.line(DISPLAY, self.color, (self.rect.x + 74, self.rect.y + 35), (enemy.rect.x, enemy.rect.y), 5)
+
+
