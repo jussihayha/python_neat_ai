@@ -102,8 +102,8 @@ class Game:
 
         if output[0] > 0.5:
             self.hero.hero_jumping = True
-
-        if output[1] > 0.5:
+        # FIXME: This logic should not be defined here.
+        if output[1] > 0.5 and len(self.bullets) < 5:
             self.bullets.append(Bullet(self.speed, self.hero.rect.x, self.hero.rect.y))
 
     def check_highscore_and_add_speed(self):
