@@ -28,7 +28,7 @@ class Game:
         self.hero = Hero()
         self.index = index
         self.replaymode = replaymode
-        self.enemies_shot = 0
+        self.enemies_hit = 0
         self.enemies_missed = 0
 
     def play(self):
@@ -39,6 +39,8 @@ class Game:
             # Run while hero is alive
             if not self.hero.alive or self.points > 8000:
                 break
+            else:
+                self.genome.fitness += 0.015
 
             # Basic for loop in Pygame for enabling closing window from X
             for event in pygame.event.get():
@@ -69,6 +71,7 @@ class Game:
                 self.check_shot_enemy(bullet)
                 # If bullet has passed screen -> remove bullet and give negative fitness
                 if bullet.rect.x > 1200:
+                    self.enemies_missed += 1
                     self.genome.fitness -= 0.02
                     self.bullets.pop(0)
 
@@ -120,7 +123,7 @@ class Game:
 
             if pygame.sprite.spritecollide(bullet, current_enemy, False, pygame.sprite.collide_mask):
                 self.genome.fitness += 0.5
-                self.enemies_shot += 1
+                self.enemies_hit += 1
                 self.bullets.pop(0)
                 self.enemies.pop(0)
 
@@ -134,12 +137,13 @@ class Game:
         if not self.replaymode:
             hero_number = FONT.render(f'HERO  {str(self.index)} OUT OF {str(len(self.pop.population))}', True,
                                       (0, 0, 0))
-        generation_number = FONT.render(f'GENERATION  {str(self.pop.generation + 1)}', True, (0, 0, 0))
-        DISPLAY.blit(hero_number, (50, 450))
-        DISPLAY.blit(generation_number, (50, 480))
+            generation_number = FONT.render(f'GENERATION  {str(self.pop.generation + 1)}', True, (0, 0, 0))
+            DISPLAY.blit(hero_number, (50, 450))
+            DISPLAY.blit(generation_number, (50, 480))
 
-        shot_enemies = FONT.render(f'SHOT {str(self.enemies_shot)}', True, (0, 0, 0))
+        shot_enemies = FONT.render(f'HIT {str(self.enemies_hit)}', True, (0, 0, 0))
         missed_enemies = FONT.render(f'MISSED {str(self.enemies_missed)}', True, (0, 0, 0))
+        # Add miss%
         current_points = FONT.render(f'POINTS {str(self.points)}', True, (0, 0, 0))
         highscore_points = FONT.render(f'HIGHSCORE {str(highscore)}', True, (0, 0, 0))
 
