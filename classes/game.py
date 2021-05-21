@@ -37,7 +37,10 @@ class Game:
 
         while run:
             # Run while hero is alive
-            if not self.hero.alive or self.points > 8000:
+            if not self.hero.alive:
+                break
+            elif self.points > 8000:
+                self.genome.fitness += 25
                 break
             else:
                 self.genome.fitness += 0.015
@@ -94,6 +97,8 @@ class Game:
     def get_hero_action(self):
         # Calculate distance between enemy and hero
         distance_between_enemy = self.hero.distance((self.enemies[0].rect.x, self.enemies[0].rect.y))
+        hero_position = self.hero.rect
+        enemy_position = self.enemies[0].rect
         # inputs are:
         # speed of the game
         # distance between enemy and hero
@@ -101,7 +106,7 @@ class Game:
         # hero y-position
         # amount of bullets on the screen
         output = self.net.activate(
-            (self.speed, distance_between_enemy, self.enemies[0].rect.y, self.hero.rect.y, len(self.bullets)))
+            (self.speed, distance_between_enemy, hero_position.x, enemy_position.x, hero_position.y, enemy_position.y, len(self.bullets)))
 
         if output[0] > 0.5:
             self.hero.hero_jumping = True
@@ -124,8 +129,9 @@ class Game:
             if pygame.sprite.spritecollide(bullet, current_enemy, False, pygame.sprite.collide_mask):
                 self.genome.fitness += 0.5
                 self.enemies_hit += 1
-                self.bullets.pop(0)
                 self.enemies.pop(0)
+                self.bullets.pop(0)
+                bullet.kill()
 
     def check_collision(self, enemy):
         current_enemy = pygame.sprite.Group(enemy)
